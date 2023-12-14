@@ -1,0 +1,5 @@
+freerdp3 (3.0.0+dfsg1-1) unstable; urgency=medium
+
+  * Initial release for FreeRDP 3.0 (Closes: #1056992)
+
+ -- Bernhard Miklautz <bernhard.miklautz@shacknet.at>  Wed, 20 Dec 2023 15:10:22 +0100
