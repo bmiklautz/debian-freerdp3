@@ -1,3 +1,14 @@
+freerdp3 (3.1.0+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release 3.1.0
+  * debian/
+    + remove libuwac and librdtk
+    + add man pages for freerdp3-sdl and freerdp-proxy3
+    + add major version to built binaries (like xfreerdp3)
+    + remove Conflicts/Replaces in control file
+
+ -- Bernhard Miklautz <bernhard.miklautz@shacknet.at>  Fri, 29 Dec 2023 22:23:22 +0100
+
 freerdp3 (3.0.0+dfsg1-1) unstable; urgency=medium
 
   * Initial release for FreeRDP 3.0 (Closes: #1056992)

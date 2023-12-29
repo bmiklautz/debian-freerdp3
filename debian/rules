@@ -38,6 +38,10 @@ DEB_CMAKE_EXTRA_FLAGS = \
     -DWITH_OPENSC_PKCS11_LINKED=OFF \
     -DWITH_VAAPI=OFF \
     -WITH_SMARTCARD_EMULATE=ON \
+    -DRDTK_FORCE_STATIC_BUILD=ON \
+    -DUWAC_FORCE_STATIC_BUILD=ON \
+    -DWITH_SDL_IMAGE_DIALOGS=ON \
+    -DWITH_BINARY_VERSIONING=ON \
     $(empty)
 
 # Required to connect to older versions
@@ -110,19 +114,6 @@ override_dh_auto_configure:
 	    -e "s$(xSEDx)$${o}=[^=]+=\. $(xSEDx)$(xSEDx)g;" \
 	    -e "s$(xSEDx) $${o}=[^=]+=\.$(xSEDx)$(xSEDx)g;" \
 	obj-$(DEB_HOST_GNU_TYPE)/winpr/include/winpr/buildflags.h
-	sed -E -i \
-	    -e "s$(xSEDx)$${o}=[^=]+=\. $(xSEDx)$(xSEDx)g;" \
-	    -e "s$(xSEDx) $${o}=[^=]+=\.$(xSEDx)$(xSEDx)g;" \
-	obj-$(DEB_HOST_GNU_TYPE)/rdtk/include/rdtk/buildflags.h
-	# remove unused config define (not packaging freerdp-proxy so far).
-	# fixes build path leakage.
-	# NB: mangle that define to something like
-	#   /usr/lib/$(DEB_HOST_MULTIARCH)/freerdp/proxy-plugins
-	# if you consider to package freerdp-proxy.
-	# TODO: freerdp3
-	#sed -i \
-	#    -e '/FREERDP_PROXY_PLUGINDIR/d' \
-	#    obj-$(DEB_HOST_GNU_TYPE)/include/freerdp/build-config.h
 
 # NB debhelper 13+: convert to execute_before_dh_install
 override_dh_install: TMP_LIB = debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)

@@ -26,6 +26,7 @@ Build-Depends:
  libpcsclite-dev,
  libpkcs11-helper1-dev,
  libsdl2-dev,
+ libsdl2-image-dev,
  libsdl2-ttf-dev,
  libssl-dev,
  libswscale-dev,
@@ -67,12 +68,6 @@ Depends:
  libfreerdp-client3-3 (= ${binary:Version}),
 Provides:
  freerdp,
-Replaces:
- freerdp-x11,
- freerdp2-x11
-Conflicts:
- freerdp-x11,
- freerdp2-x11
 Description: RDP client for Windows Terminal Services (X11 client)
  FreeRDP is a libre client/server implementation of the Remote
  Desktop Protocol (RDP).
@@ -174,10 +169,6 @@ Depends:
  ${misc:Depends},
  ${shlibs:Depends},
  libwinpr3-3 (= ${binary:Version}),
-Breaks:
- libwinpr-tools2 (<< 2.0.0~git20170725.1.1648deb+dfsg1-1~),
-Replaces:
- libwinpr-tools2 (<< 2.0.0~git20170725.1.1648deb+dfsg1-1~),
 Multi-Arch: same
 Description: Windows Portable Runtime Tools library
  FreeRDP is a libre client/server implementation of the Remote
@@ -218,7 +209,7 @@ Depends:
  libfreerdp-shadow3-3 (= ${binary:Version}),
  libfreerdp3-3 (= ${binary:Version}),
  libwinpr3-dev (= ${binary:Version}),
- winpr-utils (= ${binary:Version}),
+ winpr3-utils (= ${binary:Version}),
  ${misc:Depends},
 Description: Free Remote Desktop Protocol library (development files)
  FreeRDP is a libre client/server implementation of the Remote
@@ -226,7 +217,7 @@ Description: Free Remote Desktop Protocol library (development files)
  .
  This package contains the FreeRDP development files.
 
-Package: winpr-utils
+Package: winpr3-utils
 Multi-Arch: foreign
 Section: utils
 Architecture: any
@@ -234,10 +225,6 @@ Depends:
  ${misc:Depends},
  ${shlibs:Depends},
  libwinpr-tools3-3 (= ${binary:Version}),
-Conflicts:
- winpr-utils (<< 3.0.0),
-Replaces:
- winpr-utils (<< 3.0.0),
 Description: Windows Portable Runtime library command line utilities
  WinPR is a spin-off project of FreeRDP which aims at providing a portable
  implementation of important portions of the Windows API. Just like FreeRDP,
@@ -298,54 +285,12 @@ Description: FreeRDP x11 shadowing server
  This package contains a "shadowing" server that can be used to
  share an already started X11 DISPLAY.
 
-Package: libuwac0-0
-Architecture: linux-any
-Section: libs
-Pre-Depends:
- ${misc:Pre-Depends},
-Depends:
- ${misc:Depends},
- ${shlibs:Depends},
- libfreerdp3-3 (= ${binary:Version}),
-Conflicts:
- libuwac0-0 (<< 3.0.0),
-Replaces:
- libuwac0-0 (<< 3.0.0),
-Multi-Arch: same
-Description: Using wayland as a client library
- Using wayland as a client (uwac) is a library to provide common
- functionality for wayland clients.
- .
- This package contains the using wayland as a client library.
-
-Package: libuwac0-dev
-Section: libdevel
-Architecture: linux-any
-Multi-Arch: same
-Depends:
- libuwac0-0 (= ${binary:Version}),
- ${misc:Depends},
-Conflicts:
- libuwac0-dev (<< 3.0.0),
-Replaces:
- libuwac0-dev (<< 3.0.0),
-Description: Using wayland as a client (development files)
- Using wayland as a client (uwac) is a library to provide common
- functionality for wayland clients.
- .
- This package contains the libuwac development files
-
 Package: freerdp3-wayland
 Architecture: linux-any
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
  libfreerdp-client3-3 (= ${binary:Version}),
- libuwac0-0 (= ${binary:Version}),
-Replaces:
- freerdp2-wayland,
-Conflicts:
- freerdp2-wayland,
 Description: RDP client for Windows Terminal Services (wayland client)
  FreeRDP is a libre client/server implementation of the Remote
  Desktop Protocol (RDP).
@@ -389,35 +334,6 @@ Description: RDP client for Windows Terminal Services (SDL client)
   * Windows 10
  .
  This package contains the X11 based client.
-
-Package: librdtk0-0
-Architecture: linux-any
-Section: libs
-Pre-Depends:
- ${misc:Pre-Depends},
-Depends:
- ${misc:Depends},
- ${shlibs:Depends},
- libwinpr3-3 (= ${binary:Version}),
-Multi-Arch: same
-Description: Remote desktop toolkit
- Very basic GUI toolkit intendted to be used
- within RDP sessions.
- .
- This package contains the rdtk library.
-
-Package: librdtk0-dev
-Section: libdevel
-Architecture: linux-any
-Multi-Arch: same
-Depends:
- librdtk0-0 (= ${binary:Version}),
- ${misc:Depends},
-Description: Remote desktop toolkit
- Very basic GUI toolkit intended to be used
- within RDP sessions.
- .
- This package contains the librdtk development files
 
 Package: libfreerdp-server-proxy3-3
 Architecture: any

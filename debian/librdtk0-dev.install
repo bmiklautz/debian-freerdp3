@@ -1,4 +1,0 @@
-usr/include/rdtk*
-usr/lib/*/cmake/rdtk*
-usr/lib/*/librdtk*.so
-usr/lib/*/pkgconfig/rdtk*.pc

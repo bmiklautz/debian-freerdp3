@@ -1,2 +1,3 @@
-usr/bin/freerdp-proxy
+usr/bin/freerdp-proxy3
 usr/lib/*/freerdp3/proxy/*.so
+usr/share/man/man1/freerdp-proxy3.1
