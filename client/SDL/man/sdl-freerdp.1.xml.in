@@ -2,10 +2,10 @@
 <!DOCTYPE refentry 
 PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
-	<!ENTITY syntax SYSTEM "xfreerdp-argument.1.xml">
-	<!ENTITY channels SYSTEM "xfreerdp-channels.1.xml">
-	<!ENTITY envvar SYSTEM "xfreerdp-envvar.1.xml">
-	<!ENTITY examples SYSTEM "xfreerdp-examples.1.xml">
+	<!ENTITY syntax SYSTEM "freerdp-argument.1.xml">
+	<!ENTITY channels SYSTEM "sdl-freerdp-channels.1.xml">
+	<!ENTITY envvar SYSTEM "sdl-freerdp-envvar.1.xml">
+	<!ENTITY examples SYSTEM "sdl-freerdp-examples.1.xml">
 	]
 >
 
@@ -17,21 +17,21 @@ PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 	</author>
 	</refentryinfo>
 	<refmeta>
-	<refentrytitle>xfreerdp</refentrytitle>
+	<refentrytitle>@MANPAGE_NAME@</refentrytitle>
 	<manvolnum>1</manvolnum>
 	<refmiscinfo class="source">freerdp</refmiscinfo>
-	<refmiscinfo class="manual">xfreerdp</refmiscinfo>
+	<refmiscinfo class="manual">@MANPAGE_NAME@</refmiscinfo>
 	</refmeta>
 	<refnamediv>
-	<refname><application>xfreerdp</application></refname>
-	<refpurpose>FreeRDP X11 client</refpurpose>
+	<refname><application>@MANPAGE_NAME@</application></refname>
+	<refpurpose>FreeRDP SDL client</refpurpose>
 	</refnamediv>
 	<refsynopsisdiv>
 	<refsynopsisdivinfo>
 		<date>@MAN_TODAY@</date>
 	</refsynopsisdivinfo>
 	<para>
-		<command>xfreerdp</command> [file] [options] [/v:server[:port]]
+		<command>@MANPAGE_NAME@</command> [file] [options] [/v:server[:port]]
 	</para>
 	</refsynopsisdiv>
 	<refsect1>
@@ -40,9 +40,10 @@ PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 	</refsect1info>
 	<title>DESCRIPTION</title>
 	<para>
-		<command>xfreerdp</command> is an X11 Remote Desktop Protocol (RDP)
+		<command>@MANPAGE_NAME@</command> is an SDL Remote Desktop Protocol (RDP)
 		client which is part of the FreeRDP project. An RDP server is built-in
-		to many editions of Windows. Alternative servers included xrdp and VRDP (VirtualBox).
+		to many editions of Windows. Alternative servers included ogon, gnome-remote-desktop,
+		xrdp and VRDP (VirtualBox).
 	</para>
 	</refsect1>
 

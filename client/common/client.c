@@ -1142,7 +1142,7 @@ BOOL client_common_get_access_token(freerdp* instance, const char* request, char
 		goto cleanup;
 	}
 
-	*token = freerdp_utils_aad_get_access_token(log, response, response_length);
+	*token = freerdp_utils_aad_get_access_token(log, (const char*)response, response_length);
 	if (*token)
 		ret = TRUE;
 
@@ -1163,14 +1163,17 @@ SSIZE_T client_common_retry_dialog(freerdp* instance, const char* what, size_t c
 	WINPR_ASSERT(instance);
 	WINPR_ASSERT(what);
 
-	if (strcmp(what, "arm-transport") != 0)
+	if ((strcmp(what, "arm-transport") != 0) && (strcmp(what, "connection") != 0))
 	{
 		WLog_ERR(TAG, "Unknown module %s, aborting", what);
 		return -1;
 	}
 
 	if (current == 0)
-		WLog_INFO(TAG, "[%s] Starting your VM. It may take up to 5 minutes", what);
+	{
+		if (strcmp(what, "arm-transport") == 0)
+			WLog_INFO(TAG, "[%s] Starting your VM. It may take up to 5 minutes", what);
+	}
 
 	const rdpSettings* settings = instance->context->settings;
 	const BOOL enabled = freerdp_settings_get_bool(settings, FreeRDP_AutoReconnectionEnabled);
@@ -1262,6 +1265,8 @@ BOOL client_auto_reconnect_ex(freerdp* instance, BOOL (*window_events)(freerdp* 
 
 		/* Attempt the next reconnect */
 		WLog_INFO(TAG, "Attempting reconnect (%" PRIu32 " of %" PRIu32 ")", numRetries, maxRetries);
+
+		IFCALL(instance->RetryDialog, instance, "connection", numRetries, NULL);
 
 		if (freerdp_reconnect(instance))
 			return TRUE;
@@ -1502,8 +1507,6 @@ BOOL freerdp_client_send_wheel_event(rdpClientContext* cctx, UINT16 mflags)
 
 	WINPR_ASSERT(cctx);
 
-	if (!freerdp_settings_get_bool(cctx->context.settings, FreeRDP_HasRelativeMouseEvent))
-	{
 #if defined(CHANNEL_AINPUT_CLIENT)
 	if (cctx->ainput)
 	{
@@ -1537,7 +1540,7 @@ BOOL freerdp_client_send_wheel_event(rdpClientContext* cctx, UINT16 mflags)
 			handled = TRUE;
 	}
 #endif
-	}
+
 	if (!handled)
 		freerdp_input_send_mouse_event(cctx->context.input, mflags, 0, 0);
 
@@ -1566,7 +1569,8 @@ BOOL freerdp_client_send_button_event(rdpClientContext* cctx, BOOL relative, UIN
 
 	WINPR_ASSERT(cctx);
 
-	if (freerdp_settings_get_bool(cctx->context.settings, FreeRDP_HasRelativeMouseEvent))
+	const BOOL relativeInput = freerdp_client_use_relative_mouse_events(cctx);
+	if (relative && relativeInput)
 	{
 		return freerdp_input_send_rel_mouse_event(cctx->context.input, mflags, x, y);
 	}
@@ -1575,8 +1579,6 @@ BOOL freerdp_client_send_button_event(rdpClientContext* cctx, BOOL relative, UIN
 	if (cctx->ainput)
 	{
 		UINT64 flags = 0;
-		BOOL relativeInput =
-		    freerdp_settings_get_bool(cctx->context.settings, FreeRDP_MouseUseRelativeMove);
 
 		if (cctx->mouse_grabbed && relativeInput)
 			flags |= AINPUT_FLAGS_HAVE_REL;
@@ -1623,7 +1625,7 @@ BOOL freerdp_client_send_extended_button_event(rdpClientContext* cctx, BOOL rela
 	BOOL handled = FALSE;
 	WINPR_ASSERT(cctx);
 
-	if (freerdp_settings_get_bool(cctx->context.settings, FreeRDP_HasRelativeMouseEvent))
+	if (relative && freerdp_client_use_relative_mouse_events(cctx))
 	{
 		return freerdp_input_send_rel_mouse_event(cctx->context.input, mflags, x, y);
 	}
@@ -2140,6 +2142,10 @@ BOOL freerdp_client_use_relative_mouse_events(rdpClientContext* ccontext)
 	const rdpSettings* settings = ccontext->context.settings;
 	const BOOL useRelative = freerdp_settings_get_bool(settings, FreeRDP_MouseUseRelativeMove);
 	const BOOL haveRelative = freerdp_settings_get_bool(settings, FreeRDP_HasRelativeMouseEvent);
-	const BOOL ainput = ccontext->ainput != NULL;
+	BOOL ainput = false;
+#if defined(CHANNEL_AINPUT_SERVER)
+	ainput = ccontext->ainput != NULL;
+#endif
+
 	return useRelative && (haveRelative || ainput);
 }

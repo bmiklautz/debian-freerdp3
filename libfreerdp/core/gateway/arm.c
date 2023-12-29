@@ -602,20 +602,20 @@ static BOOL arm_treat_azureInstanceNetworkMetadata(const char* metadata, rdpSett
 		return FALSE;
 	}
 
-	const cJSON* interface = cJSON_GetObjectItem(json, "interface");
-	if (!interface)
+	const cJSON* iface = cJSON_GetObjectItem(json, "interface");
+	if (!iface)
 	{
 		ret = TRUE;
 		goto out;
 	}
 
-	if (!cJSON_IsArray(interface))
+	if (!cJSON_IsArray(iface))
 	{
 		WLog_ERR(TAG, "expecting interface to be an Array");
 		goto out;
 	}
 
-	int interfaceSz = cJSON_GetArraySize(interface);
+	int interfaceSz = cJSON_GetArraySize(iface);
 	if (interfaceSz == 0)
 	{
 		WLog_WARN(TAG, "no addresses in azure instance metadata");
@@ -625,7 +625,7 @@ static BOOL arm_treat_azureInstanceNetworkMetadata(const char* metadata, rdpSett
 
 	for (int i = 0; i < interfaceSz; i++)
 	{
-		const cJSON* interN = cJSON_GetArrayItem(interface, i);
+		const cJSON* interN = cJSON_GetArrayItem(iface, i);
 		if (!interN)
 			continue;
 
@@ -793,7 +793,7 @@ static BOOL arm_fill_gateway_parameters(rdpArm* arm, const char* message, size_t
 static BOOL arm_handle_request_ok(rdpArm* arm, const HttpResponse* response)
 {
 	const size_t len = http_response_get_body_length(response);
-	const char* msg = http_response_get_body(response);
+	const char* msg = (const char*)http_response_get_body(response);
 	if (strnlen(msg, len + 1) > len)
 		return FALSE;
 
@@ -811,7 +811,7 @@ static BOOL arm_handle_bad_request(rdpArm* arm, const HttpResponse* response, BO
 	BOOL rc = FALSE;
 
 	const size_t len = http_response_get_body_length(response);
-	const char* msg = http_response_get_body(response);
+	const char* msg = (const char*)http_response_get_body(response);
 	if (strnlen(msg, len + 1) > len)
 		return FALSE;
 
