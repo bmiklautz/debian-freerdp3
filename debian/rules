@@ -44,6 +44,12 @@ DEB_CMAKE_EXTRA_FLAGS = \
     -DWITH_BINARY_VERSIONING=ON \
     $(empty)
 
+# Workaround for pkg file locations - will be fixed upstream in 3.1+
+# https://github.com/FreeRDP/FreeRDP/issues/9718
+DEB_CMAKE_EXTRA_FLAGS += \
+    -DPKG_CONFIG_RELOCATABLE=OFF
+    $(empty)
+
 # Required to connect to older versions
 DEB_CMAKE_EXTRA_FLAGS += \
     -DWITH_INTERNAL_MD4=ON \
