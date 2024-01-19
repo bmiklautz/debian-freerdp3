@@ -226,7 +226,7 @@ do
 	FINSTPATH=$BUILD/FFmpeg/install/$ARCH
 	CFLAGS=$FFCFLAGS LDFLAGS=$FFCFLAGS $SRC/FFmpeg/configure --prefix=$FINSTPATH --disable-all \
 		--enable-shared --disable-static --enable-swscale --disable-asm --disable-libxcb \
-		--disable-securetransport --disable-xlib
+		--disable-securetransport --disable-xlib --enable-cross-compile
 	CFLAGS=$FFCFLAGS LDFLAGS=$FFCFLAGS make -j
 	CFLAGS=$FFCFLAGS LDFLAGS=$FFCFLAGS make -j install
 	fix_rpath "$FINSTPATH/lib"
@@ -247,8 +247,20 @@ do
 done
 
 cd $BUILD
-cmake -GNinja -Bfreerdp -S"$SCRIPT_PATH/.." $CMAKE_ARGS -DWITH_PLATFORM_SERVER=OFF -DWITH_NEON=OFF -DWITH_SSE=OFF -DWITH_FFMPEG=OFF \
-	-DWITH_SWSCALE=ON -DWITH_OPUS=ON -DWITH_WEBVIEW=OFF -DWITH_FAAD2=ON -DWITH_FAAC=ON
+cmake -GNinja -Bfreerdp -S"$SCRIPT_PATH/.." \
+	$CMAKE_ARGS \
+	-DWITH_PLATFORM_SERVER=OFF \
+	-DWITH_NEON=OFF \
+	-DWITH_SSE=OFF \
+	-DWITH_FFMPEG=OFF \
+	-DWITH_SWSCALE=ON \
+	-DWITH_OPUS=ON \
+	-DWITH_WEBVIEW=OFF \
+	-DWITH_FAAD2=ON \
+	-DWITH_FAAC=ON \
+	-DWITH_INTERNAL_RC4=ON \
+	-DWITH_INTERNAL_MD4=ON \
+	-DWITH_INTERNAL_MD5=ON
 cmake --build freerdp
 cmake --install freerdp
 

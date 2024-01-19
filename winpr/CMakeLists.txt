@@ -131,7 +131,7 @@ endif()
 
 # Soname versioning
 set(VERSION_REGEX "^(.*)([0-9]+)\\.([0-9]+)\\.([0-9]+)-?(.*)")
-set(RAW_VERSION_STRING "3.1.0")
+set(RAW_VERSION_STRING "3.2.0")
 if(EXISTS "${PROJECT_SOURCE_DIR}/.source_tag")
 	file(READ ${PROJECT_SOURCE_DIR}/.source_tag RAW_VERSION_STRING)
 elseif(USE_VERSION_FROM_GIT_TAG)
@@ -366,4 +366,4 @@ install(EXPORT WinPRTargets DESTINATION ${WINPR_CMAKE_INSTALL_DIR})
 
 include(pkg-config-install-prefix)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/winpr.pc.in ${CMAKE_CURRENT_BINARY_DIR}/winpr${WINPR_VERSION_MAJOR}.pc @ONLY)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/winpr${WINPR_VERSION_MAJOR}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/winpr${WINPR_VERSION_MAJOR}.pc DESTINATION ${PKG_CONFIG_PC_INSTALL_DIR})
