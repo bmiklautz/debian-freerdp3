@@ -1035,6 +1035,10 @@ static state_run_t peer_recv_callback_internal(rdpTransport* transport, wStream*
 				else
 					ret = STATE_RUN_SUCCESS;
 				free(monitors);
+
+				const size_t len = Stream_GetRemainingLength(s);
+				if (!state_run_failed(ret) && (len > 0))
+					ret = STATE_RUN_CONTINUE;
 			}
 			else
 			{
@@ -1159,6 +1163,10 @@ static state_run_t peer_recv_callback(rdpTransport* transport, wStream* s, void*
 	state_run_t rc = STATE_RUN_FAILED;
 	const size_t start = Stream_GetPosition(s);
 	const rdpContext* context = transport_get_context(transport);
+	DWORD level = WLOG_TRACE;
+	static wLog* log = NULL;
+	if (!log)
+		log = WLog_Get(TAG);
 
 	WINPR_ASSERT(context);
 	do
@@ -1170,9 +1178,13 @@ static state_run_t peer_recv_callback(rdpTransport* transport, wStream* s, void*
 			Stream_SetPosition(s, start);
 		rc = peer_recv_callback_internal(transport, s, extra);
 
-		WLog_VRB(TAG, "(server)[%s -> %s] current return %s [%" PRIuz " bytes not processed]", old,
-		         rdp_get_state_string(rdp), state_run_result_string(rc, buffer, sizeof(buffer)),
-		         Stream_GetRemainingLength(s));
+		const size_t len = Stream_GetRemainingLength(s);
+		if ((len > 0) && !state_run_continue(rc))
+			level = WLOG_WARN;
+		WLog_Print(log, level,
+		           "(server)[%s -> %s] current return %s [%" PRIuz " bytes not processed]", old,
+		           rdp_get_state_string(rdp), state_run_result_string(rc, buffer, sizeof(buffer)),
+		           len);
 	} while (state_run_continue(rc));
 
 	return rc;

@@ -102,6 +102,10 @@ static UwacReturnCode set_cursor_image(UwacSeat* seat, uint32_t serial)
 	if (!seat || !seat->display || !seat->default_cursor || !seat->default_cursor->images)
 		return UWAC_ERROR_INTERNAL;
 
+	int scale = 1;
+	if (seat->pointer_focus)
+		scale = seat->pointer_focus->display->actual_scale;
+
 	switch (seat->pointer_type)
 	{
 		case 2: /* Custom poiner */
@@ -113,8 +117,8 @@ static UwacReturnCode set_cursor_image(UwacSeat* seat, uint32_t serial)
 				return UWAC_ERROR_INTERNAL;
 
 			surface = seat->pointer_surface;
-			x = image->hotspot_x;
-			y = image->hotspot_y;
+			x = image->hotspot_x / scale;
+			y = image->hotspot_y / scale;
 			break;
 		case 1: /* NULL pointer */
 			break;
@@ -136,6 +140,7 @@ static UwacReturnCode set_cursor_image(UwacSeat* seat, uint32_t serial)
 
 	if (surface && buffer)
 	{
+		wl_surface_set_buffer_scale(surface, scale);
 		wl_surface_attach(surface, buffer, 0, 0);
 		wl_surface_damage(surface, 0, 0, image->width, image->height);
 		wl_surface_commit(surface);
@@ -243,10 +248,7 @@ static void keyboard_handle_key(void* data, struct wl_keyboard* keyboard, uint32
 static void keyboard_handle_enter(void* data, struct wl_keyboard* keyboard, uint32_t serial,
                                   struct wl_surface* surface, struct wl_array* keys)
 {
-	uint32_t *key, *pressedKey;
 	UwacSeat* input = (UwacSeat*)data;
-	size_t i, found;
-
 	assert(input);
 
 	UwacKeyboardEnterLeaveEvent* event = (UwacKeyboardEnterLeaveEvent*)UwacDisplayNewEvent(
@@ -257,42 +259,22 @@ static void keyboard_handle_enter(void* data, struct wl_keyboard* keyboard, uint
 	event->window = input->keyboard_focus = (UwacWindow*)wl_surface_get_user_data(surface);
 	event->seat = input;
 
-	/* look for keys that have been released */
-	found = false;
-	for (pressedKey = input->pressed_keys.data, i = 0; i < input->pressed_keys.size;
-	     i += sizeof(uint32_t))
-	{
-		wl_array_for_each(key, keys)
-		{
-			if (*key == *pressedKey)
-			{
-				found = true;
-				break;
-			}
-		}
-
-		if (!found)
-		{
-			keyboard_handle_key(data, keyboard, serial, 0, *pressedKey,
-			                    WL_KEYBOARD_KEY_STATE_RELEASED);
-		}
-		else
-		{
-			pressedKey++;
-		}
-	}
-
-	/* handle keys that are now pressed */
-	wl_array_for_each(key, keys)
-	{
-		keyboard_handle_key(data, keyboard, serial, 0, *key, WL_KEYBOARD_KEY_STATE_PRESSED);
-	}
+	/* we may have the keys in the `keys` array, but as this function is called only
+	 * when the window gets focus, so there may be keys from other unrelated windows, eg.
+	 * this was leading to problems like passing CTRL+D to freerdp from closing terminal window
+	 * if it was closing very fast and the keys was still pressed by the user while the freerdp
+	 * gets focus
+	 *
+	 * currently just ignore this, as further key presses will be handled correctly anyway
+	 */
 }
 
 static void keyboard_handle_leave(void* data, struct wl_keyboard* keyboard, uint32_t serial,
                                   struct wl_surface* surface)
 {
 	struct itimerspec its = { 0 };
+	uint32_t* pressedKey;
+	size_t i;
 
 	UwacSeat* input = (UwacSeat*)data;
 	assert(input);
@@ -309,6 +291,17 @@ static void keyboard_handle_leave(void* data, struct wl_keyboard* keyboard, uint
 		return;
 
 	event->window = input->keyboard_focus;
+
+	/* we are currently loosing input focus of the main window:
+	 * check if we currently have some keys pressed and release them as if we enter the window again
+	 * it will be still "virtually" pressed in remote even if in reality the key has been released
+	 */
+	for (pressedKey = input->pressed_keys.data, i = 0; i < input->pressed_keys.size;
+	     i += sizeof(uint32_t))
+	{
+		keyboard_handle_key(data, keyboard, serial, 0, *pressedKey, WL_KEYBOARD_KEY_STATE_RELEASED);
+		pressedKey++;
+	}
 }
 
 static int update_key_pressed(UwacSeat* seat, uint32_t key)
@@ -824,10 +817,11 @@ static void pointer_handle_motion(void* data, struct wl_pointer* pointer, uint32
 
 	UwacWindow* window = input->pointer_focus;
 
-	int sx_i = wl_fixed_to_int(sx_w);
-	int sy_i = wl_fixed_to_int(sy_w);
-	double sx_d = wl_fixed_to_double(sx_w);
-	double sy_d = wl_fixed_to_double(sy_w);
+	int scale = window->display->actual_scale;
+	int sx_i = wl_fixed_to_int(sx_w) * scale;
+	int sy_i = wl_fixed_to_int(sy_w) * scale;
+	double sx_d = wl_fixed_to_double(sx_w) * scale;
+	double sy_d = wl_fixed_to_double(sy_w) * scale;
 
 	if (!window || (sx_i < 0) || (sy_i < 0))
 		return;

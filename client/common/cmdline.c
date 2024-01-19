@@ -610,6 +610,7 @@ BOOL freerdp_client_print_command_line_help_ex(int argc, char** argv,
 	printf("    %s /u:JohnDoe /p:Pwd123! /vmconnect:C824F53E-95D2-46C6-9A18-23A5BB403532 "
 	       "/v:192.168.1.100\n",
 	       name);
+	printf("    %s /u:\\AzureAD\\user@corp.example /p:pwd /v:host\n", name);
 	printf("\n");
 	printf("Clipboard Redirection: +clipboard\n");
 	printf("\n");
@@ -5275,8 +5276,15 @@ static int freerdp_client_settings_parse_command_line_arguments_int(
 	return status;
 }
 
-static void argv_free(int argc, char* argv[])
+static void argv_free(int* pargc, char** pargv[])
 {
+	WINPR_ASSERT(pargc);
+	WINPR_ASSERT(pargv);
+	const int argc = *pargc;
+	char** argv = *pargv;
+	*pargc = 0;
+	*pargv = NULL;
+
 	if (!argv)
 		return;
 	for (int x = 0; x < argc; x++)
@@ -5359,7 +5367,7 @@ static BOOL args_from_fp(FILE* fp, int* aargc, char** aargv[], const char* file,
 fail:
 	fclose(fp);
 	if (!success)
-		argv_free(*aargc, *aargv);
+		argv_free(aargc, aargv);
 	return success;
 }
 
@@ -5413,7 +5421,7 @@ static BOOL args_from_env(const char* name, int* aargc, char** aargv[], const ch
 cleanup:
 	free(env);
 	if (!success)
-		argv_free(*aargc, *aargv);
+		argv_free(aargc, aargv);
 	return success;
 }
 
@@ -5477,7 +5485,7 @@ int freerdp_client_settings_parse_command_line_arguments_ex(
 	    settings, argc, argv, allowUnknown, largs, lcount, handle_option, handle_userdata);
 fail:
 	free(largs);
-	argv_free(aargc, aargv);
+	argv_free(&aargc, &aargv);
 	return res;
 }
 
