@@ -40,14 +40,11 @@ Files: CMakeCPack.cmake
  channels/video/ChannelOptions.cmake
  client/FreeRDP-ClientConfig.cmake.in
  client/SDL/aad/CMakeLists.txt
+ client/SDL/aad/dummy.cpp
  client/SDL/aad/sdl_config.hpp.in
  client/SDL/aad/wrapper/README
  client/SDL/dialogs/CMakeLists.txt
- client/SDL/dialogs/font/CMakeLists.txt
  client/SDL/dialogs/font/README.txt
- client/SDL/dialogs/font/convert_font_to_c.cpp
- client/SDL/dialogs/font/opensans_variable_font.cpp
- client/SDL/dialogs/font/opensans_variable_font.hpp
  client/SDL/dialogs/sdl_button.hpp
  client/SDL/dialogs/sdl_buttons.cpp
  client/SDL/dialogs/sdl_buttons.hpp
@@ -55,20 +52,29 @@ Files: CMakeCPack.cmake
  client/SDL/dialogs/sdl_input_widgets.hpp
  client/SDL/dialogs/sdl_selectlist.cpp
  client/SDL/dialogs/sdl_selectlist.hpp
+ client/SDL/dialogs/res/CMakeLists.txt
  client/SDL/dialogs/test/CMakeLists.txt
  client/SDL/dialogs/test/TestSDLDialogs.cpp
+ client/SDL/man/CMakeLists.txt
+ client/SDL/man/sdl-freerdp-channels.1.xml
+ client/SDL/man/sdl-freerdp-envvar.1.xml
+ client/SDL/man/sdl-freerdp-examples.1.xml
+ client/SDL/man/sdl-freerdp.1.xml.in
  client/Sample/ModuleOptions.cmake
  client/Wayland/wlfreerdp.1.in
  client/X11/ModuleOptions.cmake
- client/X11/generate_argument_docbook.c
  client/X11/resource/close.xbm
  client/X11/resource/lock.xbm
  client/X11/resource/minimize.xbm
  client/X11/resource/restore.xbm
  client/X11/resource/unlock.xbm
- client/X11/xfreerdp-envvar.1.xml
- client/X11/xfreerdp-examples.1.xml
- client/X11/xfreerdp.1.xml.in
+ client/X11/man/CMakeLists.txt
+ client/X11/man/xfreerdp-channels.1.xml
+ client/X11/man/xfreerdp-envvar.1.xml
+ client/X11/man/xfreerdp-examples.1.xml
+ client/X11/man/xfreerdp.1.xml.in
+ client/common/man/CMakeLists.txt
+ client/common/man/generate_argument_docbook.c
  client/common/test/CMakeLists.txt
  client/common/test/TestClientChannels.c
  client/common/test/TestClientCmdLine.c
@@ -76,6 +82,7 @@ Files: CMakeCPack.cmake
  client/freerdp-client.pc.in
  cmake/ClangFormat.cmake
  cmake/ClangToolchain.cmake
+ cmake/CommonConfigOptions.cmake
  cmake/CompilerFlags.cmake
  cmake/ConfigOptions.cmake
  cmake/ConfigureFreeRDP.cmake
@@ -250,6 +257,9 @@ Files: CMakeCPack.cmake
  resources/FreeRDP_Logo.png:meta
  resources/FreeRDP_Logo.svg
  resources/FreeRDP_Logo_Icon.svg
+ resources/icon_error.svg
+ resources/icon_info.svg
+ resources/icon_warning.svg
  scripts/LECHash.c
  scripts/LOMHash.c
  scripts/blacklist-memory-sanitizer.txt
@@ -270,6 +280,7 @@ Files: CMakeCPack.cmake
  server/proxy/config.ini
  server/proxy/freerdp-proxy.pc.in
  server/proxy/modules/README.md
+ server/proxy/cli/freerdp-proxy.1.in
  server/shadow/FreeRDP-ShadowConfig.cmake.in
  server/shadow/Mac/CMakeLists.txt
  server/shadow/Win/CMakeLists.txt
@@ -506,7 +517,7 @@ Files: CMakeCPack.cmake
  winpr/tools/makecert-cli/winpr-makecert.1.in
  winpr/tools/winpr-tools.pc.in
  winpr/winpr.pc.in
- winpr/wlog.7
+ winpr/wlog.7.in
 Copyright: NONE
 License: UNKNOWN
  FIXME
@@ -1035,6 +1046,8 @@ Files: channels/audin/client/ios/CMakeLists.txt
  channels/urbdrc/common/urbdrc_helpers.c
  channels/urbdrc/common/urbdrc_helpers.h
  client/SDL/dialogs/sdl_button.cpp
+ client/SDL/sdl_window.cpp
+ client/SDL/sdl_window.hpp
  client/Sample/tf_channels.c
  client/Sample/tf_channels.h
  client/Sample/tf_freerdp.h
@@ -1460,7 +1473,9 @@ Copyright: 2017, Armin Novak <anovak@thincast.com>
 License: Apache-2.0
  FIXME
 
-Files: client/SDL/dialogs/sdl_dialogs.cpp
+Files: client/SDL/dialogs/sdl_connection_dialog.cpp
+ client/SDL/dialogs/sdl_connection_dialog.hpp
+ client/SDL/dialogs/sdl_dialogs.cpp
  client/SDL/dialogs/sdl_dialogs.hpp
  client/SDL/dialogs/sdl_input.cpp
  client/SDL/dialogs/sdl_input.hpp
@@ -1468,6 +1483,10 @@ Files: client/SDL/dialogs/sdl_dialogs.cpp
  client/SDL/dialogs/sdl_select.hpp
  client/SDL/dialogs/sdl_widget.cpp
  client/SDL/dialogs/sdl_widget.hpp
+ client/SDL/dialogs/res/sdl_resource_file.cpp
+ client/SDL/dialogs/res/sdl_resource_file.hpp
+ client/SDL/dialogs/res/sdl_resource_manager.cpp
+ client/SDL/dialogs/res/sdl_resource_manager.hpp
  client/SDL/sdl_channels.cpp
  client/SDL/sdl_channels.hpp
  client/SDL/sdl_disp.cpp
@@ -1560,10 +1579,6 @@ Files: channels/disp/disp_common.c
  libfreerdp/core/display.c
  libfreerdp/core/display.h
  server/proxy/modules/CMakeLists.txt
- server/proxy/modules/capture/cap_config.c
- server/proxy/modules/capture/cap_config.h
- server/proxy/modules/capture/cap_protocol.c
- server/proxy/modules/capture/cap_protocol.h
 Copyright: 2019, Kobi Mizrachi <kmizrachi18@gmail.com>
 License: Apache-2.0
  FIXME
@@ -1688,7 +1703,7 @@ Files: uwac/include/uwac/uwac-tools.h
 Copyright: 2014, David FORT <contact@hardening-consulting.com>
   2014-2015, David FORT <contact@hardening-consulting.com>
   2015, David FORT <contact@hardening-consulting.com>
-License: HPND-sell-variant and/or NTP~disclaimer
+License: HPND-sell-variant~and/or~NTP~disclaimer
  FIXME
 
 Files: include/freerdp/server/proxy/proxy_log.h
@@ -1757,8 +1772,6 @@ License: Apache-2.0
  FIXME
 
 Files: server/proxy/modules/bitmap-filter/CMakeLists.txt
- server/proxy/modules/capture/CMakeLists.txt
- server/proxy/modules/capture/cap_main.c
  server/proxy/modules/demo/CMakeLists.txt
  server/proxy/modules/demo/demo.cpp
 Copyright: 2019, Kobi Mizrachi <kmizrachi18@gmail.com>
@@ -2190,6 +2203,7 @@ License: Apache-2.0
 
 Files: client/SDL/CMakeLists.txt
  client/SDL/sdl_monitor.hpp
+ client/SDL/dialogs/res/convert_res_to_c.cpp
 Copyright: 2022, Armin Novak <anovak@thincast.com>
   2023, Armin Novak <anovak@thincast.com>
 License: Apache-2.0
@@ -3297,6 +3311,7 @@ Copyright: *No Copyright
   2013, Martin Fleisz <martin.fleisz@thincast.com>
   2013, Thincast Technologies GmbH
   2013, Zhang Zhaolong <zhangzl2013@126.com>
+  2013-2016, Collabora, Ltd.
   2014, Armin Novak <armin.novak@gmail.com>
   2014, Armin Novak <armin.novak@thincast.com>
   2014, Christian Plattner <ccpp@gmx.at>
@@ -3509,6 +3524,11 @@ License: HPND-sell-variant and/or NTP~disclaimer
 Files: uwac/protocols/server-decoration.xml
 Copyright: 2015, Martin Gräßlin
 License: LGPL-2.1+
+ FIXME
+
+Files: uwac/protocols/viewporter.xml
+Copyright: 2013-2016, Collabora, Ltd.
+License: HPND-sell-variant and/or NTP~disclaimer
  FIXME
 
 Files: cmake/WindowsDLLVersion.rc.in
